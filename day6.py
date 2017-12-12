@@ -25,11 +25,11 @@ def build_next_state(mem_blocks):
 
 
 def state_in_list(state, list_of_states):
-    for existing_state in list_of_states:
-        if state == existing_state:
-            return True
+    for i in range(len(list_of_states)):
+        if state == list_of_states[i]:
+            return i
 
-    return False
+    return -1
 
 
 def find_cycle(start_state_as_string):
@@ -38,8 +38,8 @@ def find_cycle(start_state_as_string):
 
     states = list()
     current_state = start_state
-    while not state_in_list(current_state, states):
+    while state_in_list(current_state, states) < 0:
         states.append(current_state)
         current_state = build_next_state(current_state)
-    return len(states)
 
+    return len(states), len(states) - state_in_list(current_state, states)

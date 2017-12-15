@@ -26,7 +26,7 @@ def do_operation(registers, register, action, value):
     registers[register] = current
 
 
-def process_line(registers, line):
+def process_line_and_return_value(registers, line):
 
     regex = re.compile("(\w*) (inc|dec) ([\-0-9]*) if (\w*) ([><=!]*) ([\-0-9]*)")
 
@@ -40,17 +40,21 @@ def process_line(registers, line):
 
     if check_condition(registers, check_register, check_op, check_value):
         do_operation(registers, register, action, action_value)
+        return registers.get(register)
 
 
 def process_input(input_string):
     registers = {}
+    max_value_seen = 0
     lines = input_string.split("\n")
     for line in lines:
-        process_line(registers, line)
+        updated_value = process_line_and_return_value(registers, line)
+        if updated_value and updated_value > max_value_seen:
+            max_value_seen = updated_value
 
     max_value = 0
     for value in registers.values():
         if value > max_value:
             max_value = value
 
-    return max_value
+    return max_value, max_value_seen

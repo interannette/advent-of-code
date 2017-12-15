@@ -1,10 +1,11 @@
-def compute_score(input_string):
+def compute_score_and_garbage_count(input_string):
 
     in_garbage = False
     escaped = False
     group_starts = []
     current_score = 0
     total_score = 0
+    garbage_count = 0;
 
     for i in range(len(input_string)):
         if not in_garbage:
@@ -24,4 +25,6 @@ def compute_score(input_string):
                 in_garbage = False
             elif input_string[i] == '!':
                 escaped = True
-    return total_score
+            else:
+                garbage_count += 1
+    return total_score, garbage_count

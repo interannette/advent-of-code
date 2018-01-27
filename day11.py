@@ -37,15 +37,25 @@ def handle_direction(direction, (x,y,z)):
     return x, y, z
 
 
+def distance_at_coord(coord):
+    return max(map(abs, coord))
+
+
 def find_distance(input_string):
     direction_list = input_string.split(",")
     coord = (0, 0, 0)
+
+    max_distance = 0
+
     for direction in direction_list:
         coord = handle_direction(direction, coord)
+        current_distance = distance_at_coord(coord)
+        if current_distance > max_distance:
+            max_distance = current_distance
 
-    print(max(map(abs, coord)))
+    print "Final distance", current_distance
+    print "Max distance ", max_distance
 
-find_distance('''ne,ne,ne''')
-find_distance('''ne,ne,sw,sw''')
-find_distance('''ne,ne,s,s''')
-find_distance('''se,sw,se,sw,sw''')
+find_distance('''''')
+
+

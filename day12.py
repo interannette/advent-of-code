@@ -25,12 +25,33 @@ def add_children_to_set(elem, zero_group, connections_dict):
     return zero_group
 
 
-def find_zero_group(input_string):
+def find_n_group(n, connections_dict):
+    n_group = set([n])
+    for elem in list(connections_dict[n]):
+        n_group = add_children_to_set(elem, n_group, connections_dict)
+
+    return n_group
+
+
+def find_size_zero_group(input_string):
     connections_dict = build_connections_dict(input_string)
 
-    zero_group = set(['0'])
-
-    for elem in list(connections_dict['0']):
-        zero_group = add_children_to_set(elem, zero_group, connections_dict)
+    zero_group = find_n_group('0', connections_dict)
 
     return len(zero_group)
+
+
+def find_num_groups(input_string):
+    connections_dict = build_connections_dict(input_string)
+
+    groups = []
+    elems_in_groups = set()
+
+    for elem in connections_dict.keys():
+        if elem not in elems_in_groups:
+            group_for_elem = find_n_group(elem, connections_dict)
+            groups.append(group_for_elem)
+            elems_in_groups = elems_in_groups.union(group_for_elem)
+
+    return len(groups)
+

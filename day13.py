@@ -1,19 +1,89 @@
+
+class Scanner:
+
+    pos = 0
+    direction = 1
+
+    def __init__(self, scan_range):
+        self.scan_range = scan_range
+
+    def advance(self):
+        self.pos += self.direction
+        if self.pos == self.scan_range:
+            self.direction = -1
+        elif self.pos == 0:
+            self.direction = 1
+
+    def is_at_pos(self, pos):
+        return self.pos == pos;
+
+    def __str__(self):
+        return "pos: " + str(self.pos) + " direction: " + str(self.direction) + " scan_range: " + str(self.scan_range)
+
+
+class ScannerMap:
+
+    def __init__(self):
+        self.scanner_map = {}
+
+    def add_layer(self, layer, scan_range):
+        self.scanner_map[layer] = Scanner(scan_range)
+
+    def advance_scanners(self):
+        for layer, scanner in self.scanner_map.items():
+            scanner.advance()
+
+    def scanner_at_layer(self, layer):
+        if layer in self.scanner_map.keys():
+            return self.scanner_map[layer]
+        else:
+            return None
+
+    def clone_scanner_map(self):
+        clone = ScannerMap()
+        for layer, scanner in self.scanner_map.items():
+            cloned_scanner = Scanner(scanner.scan_range)
+            cloned_scanner.pos = scanner.pos
+            cloned_scanner.direction = scanner.direction
+            clone.scanner_map[layer] = cloned_scanner
+        return clone
+
+    def max_layer(self):
+        return max(self.scanner_map.keys())
+
+
+# Take the input string of the format
+#  layer : range
+#  layer : range etc
+# And turn it into a dict of Scanners, layer : Scanner
 def build_scanner_map(input_string):
-    scanner_map = {}
+    scanner_map = ScannerMap()
     for line in input_string.split("\n"):
         [l, r] = line.split(": ")
-        scanner_map[int(l)] = int(r)-1
+        scanner_map.add_layer(int(l), int(r) - 1)
     return scanner_map
 
 
-def run_firewall(input_string):
-    scanner_range_map = build_scanner_map(input_string)
-    scanner_pos_map = dict([(key, 0) for key in scanner_range_map.keys()])
-    scanner_dir_map = dict([(key, 1) for key in scanner_range_map.keys()])
+def find_min_delay(scanner_map):
 
-    max_layer = max(scanner_range_map.keys())
+    severity = -1
+    delay = 0
 
-    print("scanner pos " + str(scanner_range_map))
+    while severity != 0:
+        # clone scanner map, which is advanced delay number of steps
+        severity = run_firewall(scanner_map.clone_scanner_map(), True)
+        print("delay " + str(delay) + " results in severity " + str(severity))
+        if severity == 0:
+            return delay
+        else:
+            delay += 1
+            scanner_map.advance_scanners()
+
+
+def run_firewall(scanner_map, strict):
+
+    max_layer = scanner_map.max_layer()
+
     print("max layers " + str(max_layer))
 
     current_packet_pos = -1
@@ -21,41 +91,72 @@ def run_firewall(input_string):
     severity = 0
 
     for i in range(max_layer+1):
-        print("loop " + str(i))
+        # print("loop " + str(i))
 
-        print("packet starts at " + str(current_packet_pos))
-        print("scanners start at " + str(scanner_pos_map))
+        # print("packet starts at " + str(current_packet_pos))
 
         # advance packet
         current_packet_pos += 1
-        print("packet moves to "+str(current_packet_pos))
+        # print("packet moves to " + str(current_packet_pos))
 
         # do check
-        if current_packet_pos in scanner_pos_map and scanner_pos_map[current_packet_pos] == 0:
+        scanner = scanner_map.scanner_at_layer(i)
+        if scanner and 0 == scanner.pos:
             print("packet caught at " + str(i))
-            print("range " + str(scanner_range_map[current_packet_pos] + 1))
-            additional_severity = i * (scanner_range_map[current_packet_pos] + 1)
-            print("adding to severity " + str(additional_severity))
-            severity += additional_severity
+            if strict:
+                return 100
+            else:
+                # print("range " + str(scanner.scan_range + 1))
+                additional_severity = i * (scanner.scan_range + 1)
+                # print("adding to severity " + str(additional_severity))
+                severity += additional_severity
 
-        # advance scanners
-        for layer, range_of_layer in scanner_range_map.iteritems():
-            # print("advancing scanner layer " + str(layer))
-            updated_pos = scanner_pos_map[layer] + scanner_dir_map[layer]
-            # print("advanced to " + str(updated_pos))
-            if updated_pos == scanner_range_map[layer]:
-                scanner_dir_map[layer] = -1
-            elif updated_pos == 0:
-                scanner_dir_map[layer] = 1
-            # print("corrected to " + str(updated_pos))
-            scanner_pos_map[layer] = updated_pos
-
-        print("current scanner pos " + str(scanner_pos_map))
+        scanner_map.advance_scanners()
 
     return severity
 
 
-print(run_firewall('''0: 3
+print(run_firewall(build_scanner_map('''0: 3
 1: 2
+2: 6
 4: 4
-6: 4'''))
+6: 4
+8: 8
+10: 6
+12: 8
+14: 5
+16: 6
+18: 8
+20: 8
+22: 12
+24: 6
+26: 9
+28: 8
+30: 12
+32: 12
+34: 17
+36: 12
+38: 8
+40: 12
+42: 12
+44: 10
+46: 12
+48: 12
+50: 12
+52: 14
+54: 14
+56: 10
+58: 14
+60: 12
+62: 14
+64: 14
+66: 14
+68: 14
+70: 14
+72: 14
+74: 14
+76: 14
+86: 14
+94: 20
+96: 18'''), False))
+

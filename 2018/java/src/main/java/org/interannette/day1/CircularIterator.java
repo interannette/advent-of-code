@@ -1,5 +1,7 @@
 package org.interannette.day1;
 
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
 import java.util.Iterator;
 import java.util.List;
 
@@ -13,13 +15,15 @@ public class CircularIterator implements Iterator<Integer> {
         this.currentPosition = 0;
     }
 
-    @Override
     public boolean hasNext() {
         return true;
     }
 
-    @Override
     public Integer next() {
         return list.get((currentPosition++ % list.size()));
+    }
+
+    public void remove() {
+        throw new NotImplementedException();
     }
 }

@@ -9,10 +9,7 @@ import java.util.stream.Collectors;
 
 public class Day1 {
 
-    private static final String INPUT_STRING = "+1\n" +
-            "-2\n" +
-            "+3\n" +
-            "+1";
+    private static final String INPUT_STRING = "";
 
     public static void main(String[] args) {
 
@@ -28,13 +25,13 @@ public class Day1 {
         this.input = Arrays.asList(integersAsStrings).stream().map(Integer::valueOf).collect(Collectors.toList());
     }
 
-    public int solveStar1() {
+    public Integer solveStar1() {
 
         return input.stream().mapToInt(Integer::intValue).sum();
 
     }
 
-    public int solveStar2() {
+    public Integer solveStar2() {
 
         Iterator<Integer> circularIteratorOfShifts = new CircularIterator(input);
 

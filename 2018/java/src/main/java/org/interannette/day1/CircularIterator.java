@@ -20,7 +20,9 @@ public class CircularIterator implements Iterator<Integer> {
     }
 
     public Integer next() {
-        return list.get((currentPosition++ % list.size()));
+        int posToReturn = currentPosition;
+        currentPosition = ++currentPosition % list.size();
+        return list.get(posToReturn);
     }
 
     public void remove() {

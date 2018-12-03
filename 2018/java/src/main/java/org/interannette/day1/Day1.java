@@ -1,5 +1,8 @@
 package org.interannette.day1;
 
+import org.interannette.InputGetter;
+
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -9,11 +12,9 @@ import java.util.stream.Collectors;
 
 public class Day1 {
 
-    private static final String INPUT_STRING = "";
+    public static void main(String[] args) throws IOException {
 
-    public static void main(String[] args) {
-
-        Day1 testDay = new Day1(INPUT_STRING);
+        Day1 testDay = new Day1(InputGetter.getInput(1));
         System.out.println("Total Frequency Shifts: " + testDay.solveStar1());
         System.out.println("First Repeated Frequency: " + testDay.solveStar2());
     }

@@ -1,5 +1,8 @@
 package org.interannette.day2;
 
+import org.interannette.InputGetter;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -9,8 +12,8 @@ import java.util.stream.Collectors;
 
 public class Day2 {
 
-    public static void main(String args[]) {
-        Day2 day2 = new Day2(INPUT_STRING);
+    public static void main(String args[]) throws IOException {
+        Day2 day2 = new Day2(InputGetter.getInput(2));
         System.out.println("Checksum is: " + day2.solveStar1());
         System.out.println("Matching characters are: " + day2.solveStar2());
     }

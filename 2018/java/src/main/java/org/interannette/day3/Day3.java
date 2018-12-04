@@ -5,9 +5,12 @@ import org.interannette.InputGetter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class Day3 {
@@ -16,21 +19,21 @@ public class Day3 {
 
         Day3 testDay = new Day3(InputGetter.getInput(3));
         System.out.println("Squares With Overlapping Claims: " + testDay.solveStar1());
+        System.out.println("Non-conflicting claim: " + testDay.solveStar2());
 
     }
 
-    private List<Claim> input;
+    private Map<String, Claim> claimsById;
     private List<List<Set<String>>> gridOfClaims;
 
     public Day3(String inputAsString) {
-        input = Arrays.stream(inputAsString.split("\n"))
+        claimsById = Arrays.stream(inputAsString.split("\n"))
                 .map(s -> new Claim(s))
-                .collect(Collectors.toList());
+                .collect(Collectors.toMap(c -> c.id, Function.identity()));
+        gridOfClaims = buildGridOfClaims(claimsById.values());
     }
 
     public Integer solveStar1() {
-        gridOfClaims = buildGridOfClaims(input);
-
         int totalConflictedArea = gridOfClaims.stream()
                 .mapToInt(row ->
                         row.stream().mapToInt(s -> (s.size() > 1) ? 1 : 0).sum())
@@ -39,7 +42,23 @@ public class Day3 {
         return totalConflictedArea;
     }
 
-    static List<List<Set<String>>> buildGridOfClaims(List<Claim> claims) {
+    public String solveStar2() {
+
+        Set<String> idsWithConflicts = gridOfClaims.stream()
+                .map(row -> row.stream().filter(s -> s.size() > 1).flatMap(s -> s.stream()).collect(Collectors.toSet()))
+                .flatMap(s -> s.stream())
+                .collect(Collectors.toSet());
+
+        Set<String> allIds = claimsById.keySet();
+        allIds.removeAll(idsWithConflicts);
+        if(allIds.size() > 1) {
+            throw new RuntimeException("Uhoh");
+        }
+
+        return allIds.iterator().next();
+    }
+
+    static List<List<Set<String>>> buildGridOfClaims(Collection<Claim> claims) {
         List<List<Set<String>>> gridOfClaims = initEmptyGrid();
         for(Claim claim : claims) {
             for(int i=claim.y; i < claim.y + claim.height; i++) {

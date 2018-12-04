@@ -26,4 +26,21 @@ public class Day3Test {
                         4)
         );
     }
+
+    @ParameterizedTest
+    @MethodSource("star2TestCases")
+    void solveStar2(StarTestCase<String> testCase) {
+        Day3 testDay = new Day3(testCase.getInputString());
+        assertEquals(testCase.getExpectedOutput(), testDay.solveStar2());
+    }
+
+    static Stream<StarTestCase<String>> star2TestCases() {
+        return Stream.of(
+                new StarTestCase<>(
+                        "#1 @ 1,3: 4x4\n" +
+                                "#2 @ 3,1: 4x4\n" +
+                                "#3 @ 5,5: 2x2",
+                        "3")
+        );
+    }
 }

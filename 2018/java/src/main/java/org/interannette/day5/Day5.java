@@ -3,61 +3,78 @@ package org.interannette.day5;
 import org.interannette.InputGetter;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Queue;
+import java.util.Stack;
 
 public class Day5 {
 
     public static void main(String[] args) throws IOException {
-        Day5 day5 = new Day5(InputGetter.getInput(5));
+        Day5 day5 = new Day5(InputGetter.getInput(5).replace("\n",""));
         System.out.println("Star 1: " + day5.solveStar1());
-        //System.out.println("Star 2: " + day5.solveStar2());
+        System.out.println("Star 2: " + day5.solveStar2());
     }
 
-    List<String> inputChars;
+    Queue<Character> inputChars;
+    String inputString;
 
     public Day5(String inputString) {
-        this.inputChars = Arrays.asList(inputString.split(""));
-    }
-
-    public int solveStar1() {
-
-        List<String> original = inputChars;
-        List<String> update = reduceList(inputChars);
-
-        while(original.size() != update.size()) {
-            original = update;
-            update = reduceList(update);
+        this.inputString = inputString;
+        this.inputChars = new LinkedList<>();
+        for(char c : inputString.toCharArray()) {
+            inputChars.add(c);
         }
-
-        return update.size();
     }
 
-    static List<String> reduceList(List<String> characters) {
-        List<String> updatedList = new ArrayList<>(characters.size());
-        for(int i = 0; i < characters.size(); i++) {
-            String thisChar = characters.get(i);
-            if(i+1 == characters.size()) {
-                // this is the last element, just add it;
-                updatedList.add(thisChar);
+    public Integer solveStar1() {
+        Stack<Character> resultChars = new Stack<>();
+
+        Character previous = null;
+        Character next = inputChars.poll();
+        while(next != null) {
+            if(areOppositePolarity(previous, next)) {
+                previous = !resultChars.isEmpty() ? resultChars.pop() : null;
+                next = inputChars.poll();
             } else {
-                String nextChar = characters.get(i + 1);
-                if (areOppositePolarity(thisChar, nextChar)) {
-                    i++; // skip this and the next char
-                } else {
-                    updatedList.add(thisChar);
+                if(previous != null) {
+                    resultChars.push(previous);
                 }
+                previous = next;
+                next = inputChars.poll();
             }
         }
-        return updatedList;
+
+        if(previous != null) {
+            resultChars.push(previous);
+        }
+
+        return resultChars.size();
     }
 
-    static boolean areOppositePolarity(String i, String j) {
-        return !i.equals(j) && i.equalsIgnoreCase(j);
+
+    static boolean areOppositePolarity(Character i, Character j) {
+        if(i == null || j == null) {
+            return false;
+        }
+        return !Objects.equals(i,j)  && Character.toUpperCase(i) == Character.toUpperCase(j);
     }
 
-    public String solveStar2() {
-        return null;
+    public Integer solveStar2() {
+        Map<Character,Integer> resultByLetterRemoved = new HashMap<>(26);
+
+        for (char alphabet = 'A'; alphabet <= 'Z'; alphabet++) {
+            String updatedInput = inputString.replace(Character.toString(alphabet),"");
+            updatedInput = updatedInput.replace(Character.toString(Character.toLowerCase(alphabet)),"");
+            Day5 day5 = new Day5(updatedInput);
+            Integer result = day5.solveStar1();
+            resultByLetterRemoved.put(alphabet, result);
+        }
+
+        return resultByLetterRemoved.values().stream().min(Comparator.comparingInt(e -> e)).get();
     }
+
 }

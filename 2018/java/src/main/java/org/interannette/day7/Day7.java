@@ -19,11 +19,11 @@ public class Day7 {
     static Pattern LINE_PATTERN = Pattern.compile(LINE_REGEX);
 
     public static void main(String[] args) throws IOException {
-        Day7 printer = new Day7(InputGetter.getInput(7));
-        printer.printGraph();
-
-        Day7 day7Star1 = new Day7(InputGetter.getInput(7));
-        System.out.println("Sequence: " + day7Star1.solveStar1());
+//        Day7 printer = new Day7(InputGetter.getInput(7));
+//        printer.printGraph();
+//
+//        Day7 day7Star1 = new Day7(InputGetter.getInput(7));
+//        System.out.println("Sequence: " + day7Star1.solveStar1());
 
         Day7 day7Star2 = new Day7(InputGetter.getInput(7));
         System.out.println("Time to completion: " + day7Star2.solveStar2());
@@ -92,7 +92,7 @@ public class Day7 {
         }
 
         int seconds = -1;
-
+        int totalTasks = directedGraph.getAll().size();
         Map<Integer, WorkerTask> workerTasks = new HashMap(workerCount);
 
         Set<String> startedTasks = new HashSet<>();
@@ -125,7 +125,13 @@ public class Day7 {
 
             System.out.println("Workers at second " + seconds + ": " + workerTasks );
 
-            done = workerTasks.isEmpty();
+            boolean allWorkersDone = !workerTasks.values().stream()
+                    .filter(t -> t != null)
+                    .filter(t -> t.remainingTime > 0)
+                    .findAny()
+                    .isPresent();
+            boolean haveRemainingNodes = (startedTasks.size() < totalTasks);
+            done = allWorkersDone && !haveRemainingNodes;
         }
 
         return seconds;

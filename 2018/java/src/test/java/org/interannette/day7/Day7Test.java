@@ -36,4 +36,27 @@ public class Day7Test {
         Day7 day7 = new Day7(EXAMPLE_INPUT);
         assertEquals("CABDFE", day7.solveStar1());
     }
+
+    @Test
+    void solveStar2() {
+        Day7 day7 = new Day7(EXAMPLE_INPUT);
+        day7.workerCount = 2;
+        day7.taskDurationBase = 0;
+        assertEquals((Integer)15, day7.solveStar2());
+    }
+
+    @Test
+    void charToSecondsTestInput() {
+        Day7 day7 = new Day7(EXAMPLE_INPUT);
+        day7.taskDurationBase = 0;
+        assertEquals((Integer)1, day7.timeToProcess("A"));
+        assertEquals((Integer)26, day7.timeToProcess("Z"));
+    }
+
+    @Test
+    void charToSecondsStandardInput() {
+        Day7 day7 = new Day7(EXAMPLE_INPUT);
+        assertEquals((Integer)61, day7.timeToProcess("A"));
+        assertEquals((Integer)86, day7.timeToProcess("Z"));
+    }
 }

@@ -35,7 +35,10 @@ public class Day6 {
         maxY = coordinateList.stream().mapToInt(c -> c.y).max().getAsInt();
         minY = coordinateList.stream().mapToInt(c -> c.y).min().getAsInt();
 
-        this.relevantRectangle = new Rectangle(maxX, minX, maxY, minY);
+        int buffer = Math.max(Math.abs(maxX-minX), Math.abs(maxY-minY)) / 2;
+
+        this.relevantRectangle = new Rectangle(maxX + buffer, minX - buffer,
+                maxY + buffer, minY - buffer);
     }
 
     public Integer solveStar1() {

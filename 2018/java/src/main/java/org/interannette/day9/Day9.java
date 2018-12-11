@@ -3,6 +3,7 @@ package org.interannette.day9;
 import org.interannette.InputGetter;
 
 import java.io.IOException;
+import java.math.BigInteger;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.function.Function;
@@ -16,17 +17,21 @@ public class Day9 {
     static Pattern INPUT_PATTERN = Pattern.compile("(\\d+) players; last marble is worth (\\d+) points");
 
     public static void main(String[] args) throws IOException {
-        Day9 day9 = new Day9(InputGetter.getInput(9));
+        Day9 star1 = new Day9(InputGetter.getInput(9));
 
-        Map.Entry<Integer, Integer> winnerEntry = day9.solveStar1();
-        System.out.println("Elf " + winnerEntry.getKey() + " wins with high score " + winnerEntry.getValue());
+        Map.Entry<Integer, BigInteger> winnerEntry = star1.solveStar1();
+        System.out.println("Star 1: Elf " + winnerEntry.getKey() + " wins with high score " + winnerEntry.getValue());
+
+        Day9 star2 = new Day9(InputGetter.getInput(9));
+        winnerEntry = star2.solveStar2();
+        System.out.println("Star 2: Elf " + winnerEntry.getKey() + " wins with high score " + winnerEntry.getValue());
     }
 
 
     int players;
-    int marbles;
+    long marbles;
 
-    Map<Integer, Integer> scoresByPlayer;
+    Map<Integer, BigInteger> scoresByPlayer;
     Circle circle = new Circle();
 
     public Day9(int players, int marbles) {
@@ -34,38 +39,44 @@ public class Day9 {
         this.marbles = marbles;
         this.scoresByPlayer = IntStream.rangeClosed(1, players)
                 .boxed()
-                .collect(Collectors.toMap(Function.identity(), i -> 0));
+                .collect(Collectors.toMap(Function.identity(), i -> BigInteger.ZERO));
     }
 
     public Day9(String input) {
         Matcher m = INPUT_PATTERN.matcher(input.trim());
         if(m.matches()) {
             players = Integer.valueOf(m.group(1));
-            marbles = Integer.valueOf(m.group(2));
+            marbles = Long.valueOf(m.group(2));
 
             scoresByPlayer = IntStream.rangeClosed(1, players)
                     .boxed()
-                    .collect(Collectors.toMap(Function.identity(), i -> 0));
+                    .collect(Collectors.toMap(Function.identity(), i -> BigInteger.ZERO));
         }
     }
 
-    public Map.Entry<Integer, Integer> solveStar1() {
+    public Map.Entry<Integer, BigInteger> solveStar1() {
         playGameToCompletion();
         return scoresByPlayer.entrySet()
                 .stream()
-                .max(Comparator.comparingInt(e -> e.getValue()))
+                .max(Comparator.comparing(Map.Entry::getValue))
                 .get();
+    }
+
+    public Map.Entry<Integer, BigInteger> solveStar2 () {
+        marbles = 100 * marbles;
+        return solveStar1();
     }
 
     void playGameToCompletion() {
         int currentPlayer = 1;
-        for(int i = 1; i <= marbles; i++) {
+        for(long i = 1; i <= marbles; i++) {
             if(i % 23 == 0) {
-                int newScore = scoresByPlayer.get(currentPlayer) + i;
-                newScore += circle.removeAt(-7);
+                BigInteger newScore = scoresByPlayer.get(currentPlayer)
+                        .add(BigInteger.valueOf(i))
+                        .add(circle.removeAt(-7));
                 scoresByPlayer.put(currentPlayer, newScore);
             } else {
-                circle.insertAfter(1, i);
+                circle.insertAfter(1, BigInteger.valueOf(i));
             }
             currentPlayer = incrementPlayer(currentPlayer);
         }

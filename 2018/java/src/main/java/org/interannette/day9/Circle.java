@@ -1,16 +1,18 @@
 package org.interannette.day9;
 
+import java.math.BigInteger;
+
 public class Circle {
     DoubleLinkedNode currentNode;
 
     public Circle() {
         currentNode = new DoubleLinkedNode();
-        currentNode.setValue(0);
+        currentNode.setValue(BigInteger.ZERO);
         currentNode.setCounterClockwise(currentNode);
         currentNode.setClockwise(currentNode);
     }
 
-    void insertAfter(int stepsFromCurrent, int value) {
+    void insertAfter(int stepsFromCurrent, BigInteger value) {
         for(int i = 0; i < Math.abs(stepsFromCurrent); i++) {
             if(stepsFromCurrent > 0) {
                 currentNode = currentNode.clockwise;
@@ -30,7 +32,7 @@ public class Circle {
         currentNode = newNode;
     }
 
-    int removeAt(int stepsFromCurrent) {
+    BigInteger removeAt(int stepsFromCurrent) {
         for(int i = 0; i < Math.abs(stepsFromCurrent); i++) {
             if(stepsFromCurrent > 0) {
                 currentNode = currentNode.clockwise;
@@ -39,7 +41,7 @@ public class Circle {
             }
         }
 
-        int value = currentNode.value;
+        BigInteger value = currentNode.value;
 
         currentNode.counterClockwise.setClockwise(currentNode.clockwise);
         currentNode.clockwise.setCounterClockwise(currentNode.counterClockwise);
@@ -54,12 +56,12 @@ public class Circle {
         DoubleLinkedNode copyOfFirstNode = currentNode;
         DoubleLinkedNode nodeBeingPrinted = currentNode;
         int i = 0;
-        StringBuilder builder = new StringBuilder("Current node: " + nodeBeingPrinted.value);
+        StringBuilder builder = new StringBuilder("Current node: " + nodeBeingPrinted.value.intValue());
         nodeBeingPrinted = nodeBeingPrinted.clockwise;
 
         while(nodeBeingPrinted != copyOfFirstNode) {
             builder.append(" -> ");
-            builder.append(nodeBeingPrinted.value);
+            builder.append(nodeBeingPrinted.value.intValue());
             nodeBeingPrinted = nodeBeingPrinted.clockwise;
         }
 

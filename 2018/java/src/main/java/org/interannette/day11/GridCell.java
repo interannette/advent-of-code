@@ -10,11 +10,11 @@ public class GridCell {
         this.y = y;
     }
 
-    public int powerLevel() {
-        return powerLevel(GRID_SERIAL_NUMBER);
+    public static int powerLevel(int x, int y) {
+        return powerLevel(x,y,GRID_SERIAL_NUMBER);
     }
 
-    public int powerLevel(int serialNumber) {
+    public static int powerLevel(int x, int y, int serialNumber) {
         int rackId = x + 10;
         int powerLevel = rackId * y + serialNumber;
         powerLevel = powerLevel * rackId;

@@ -8,20 +8,33 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class GridCellTest {
+public class Day11Test {
 
     @Test
     void hundredsDigit() {
-        assertEquals(3, GridCell.hundredsDigit(12345));
-        assertEquals(0, GridCell.hundredsDigit(10));
-        assertEquals(0, GridCell.hundredsDigit(1000));
+        assertEquals(3, Day11.hundredsDigit(12345));
+        assertEquals(0, Day11.hundredsDigit(10));
+        assertEquals(0, Day11.hundredsDigit(1000));
+    }
+
+
+    @Test
+    void sampleInput1() {
+        Day11 day11 = new Day11(18);
+        assertEquals(new GridCell(33, 45), day11.solveDay1());
+    }
+
+    @Test
+    void sampleInput2() {
+        Day11 day11 = new Day11(42);
+        assertEquals(new GridCell(21,61), day11.solveDay1());
     }
 
     @ParameterizedTest
     @MethodSource("powerLevelTestCases")
     void powerLevel(PowerLevelTestCase powerLevelTestCase) {
         assertEquals(powerLevelTestCase.powerLevel,
-                GridCell.powerLevel(powerLevelTestCase.x, powerLevelTestCase.y, powerLevelTestCase.serialNumber));
+                Day11.powerLevel(powerLevelTestCase.x, powerLevelTestCase.y, powerLevelTestCase.serialNumber));
     }
 
     static Stream<PowerLevelTestCase> powerLevelTestCases() {

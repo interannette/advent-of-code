@@ -2,11 +2,13 @@ package org.interannette.day13;
 
 import org.interannette.InputGetter;
 
+import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class Day13 {
 
@@ -15,8 +17,12 @@ public class Day13 {
     int currentTick = 0;
 
     public static void main(String[] args) throws IOException {
-        Day13 day13 = new Day13(InputGetter.getInput(13));
-        System.out.println("First collision is at " + day13.solveStar1());
+        Day13 star1 = new Day13(InputGetter.getInput(13));
+        System.out.println("First collision is at " + star1.solveStar1());
+
+        Day13 star2 = new Day13(InputGetter.getInput(13));
+        System.out.println("Remaining cart location " + star1.solveStar2());
+
     }
 
     public Day13(String input) {
@@ -47,8 +53,13 @@ public class Day13 {
         Collections.sort(carts);
     }
 
-    public void advanceTick() throws CollisionException {
+    public void advanceTick(boolean continueAfterColision) throws CollisionException {
+        List<Cart> cartsToRemove = new ArrayList<>();
         for(Cart cart : carts) {
+            if(cartsToRemove.contains(cart)) {
+                continue;
+            }
+
             char currentTrack = map[cart.row][cart.col];
             cart.advance(currentTrack);
 
@@ -59,20 +70,26 @@ public class Day13 {
                     .findAny();
 
             if(colidingCart.isPresent()) {
-                throw new CollisionException(cart.row, cart.col, ++currentTick);
+                if(!continueAfterColision) {
+                    throw new CollisionException(cart.row, cart.col, ++currentTick);
+                } else {
+                    System.out.println("Removing carts on tick " + (currentTick + 1));
+                    cartsToRemove.add(cart);
+                    cartsToRemove.add(colidingCart.get());
+                }
             }
         }
 
         currentTick++;
 
-        Collections.sort(carts);
+        carts = carts.stream().filter(c -> !cartsToRemove.contains(c)).sorted().collect(Collectors.toList());
     }
 
     public String solveStar1() {
         boolean collision = false;
         while(!collision) {
             try {
-                advanceTick();
+                advanceTick(false);
                 System.out.println("Tick " + currentTick);
             } catch (CollisionException e) {
                 collision = true;
@@ -80,5 +97,23 @@ public class Day13 {
             }
         }
         return null;
+    }
+
+    public String solveStar2() {
+        while(carts.size() > 1) {
+            try {
+                advanceTick(true);
+                System.out.println("Tick " + currentTick);
+            } catch (CollisionException e) {
+                // wont happen
+            }
+        }
+
+        if(carts.size() == 0) {
+            return "even number of carts, none left";
+        } else {
+            Cart lastCart = carts.get(0);
+            return lastCart.col + "," + lastCart.row;
+        }
     }
 }

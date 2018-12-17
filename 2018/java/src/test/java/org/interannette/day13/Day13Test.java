@@ -12,6 +12,20 @@ import static org.junit.jupiter.api.Assertions.fail;
 public class Day13Test {
 
     @Test
+    void testSampleStar2() {
+        String sample = "/>-<\\  \n" +
+                "|   |  \n" +
+                "| /<+-\\\n" +
+                "| | | v\n" +
+                "\\>+</ |\n" +
+                "  |   ^\n" +
+                "  \\<->/";
+        Day13 day13 = new Day13(sample);
+        String expected = "6,4";
+        assertEquals(expected, day13.solveStar2());
+    }
+
+    @Test
     void testSampleStar1() {
         String sample = "/->-\\        \n" +
                 "|   |  /----\\\n" +
@@ -24,7 +38,7 @@ public class Day13Test {
         Day13 day13 = new Day13(sample);
         try {
             for (int i = 0; i <= 14; i++) {
-                day13.advanceTick();
+                day13.advanceTick(false);
             }
             fail();
         } catch(CollisionException e) {
@@ -60,7 +74,7 @@ public class Day13Test {
   \------/  */
         cart1.col += 1;
         cart2.row += 1;
-        day13.advanceTick();
+        day13.advanceTick(false);
         assertEquals(expectedCarts, day13.carts);
         /*
 /---v
@@ -74,7 +88,7 @@ public class Day13Test {
         cart2.col += 1;
         cart2.direction = Cart.Direction.RIGHT;
         cart2.nextTurn = Cart.Turn.STRAIGHT;
-        day13.advanceTick();
+        day13.advanceTick(false);
         assertEquals(expectedCarts, day13.carts);
 
         /*
@@ -88,7 +102,7 @@ public class Day13Test {
         cart1.row += 1;
         cart1.direction = Cart.Direction.DOWN;
         cart2.col += 1;
-        day13.advanceTick();
+        day13.advanceTick(false);
         assertEquals(expectedCarts, day13.carts);
         /*
 /---\
@@ -100,7 +114,7 @@ public class Day13Test {
          */
         cart1.row += 1;
         cart2.col += 1;
-        day13.advanceTick();
+        day13.advanceTick(false);
         assertEquals(expectedCarts, day13.carts);
     /*
 /---\
@@ -115,7 +129,7 @@ public class Day13Test {
         cart1.direction = Cart.Direction.RIGHT;
         cart2.direction = Cart.Direction.UP;
         cart2.row -= 1;
-        day13.advanceTick();
+        day13.advanceTick(false);
         assertEquals(expectedCarts, day13.carts);
     /*
 /---\
@@ -127,7 +141,7 @@ public class Day13Test {
      */
         cart1.col+=1;
         cart2.row-=1;
-        day13.advanceTick();
+        day13.advanceTick(false);
         assertEquals(expectedCarts, day13.carts);
 /*
 /---\
@@ -140,7 +154,7 @@ public class Day13Test {
         cart1.col+=1;
         cart2.row-=1;
         Collections.sort(expectedCarts);
-        day13.advanceTick();
+        day13.advanceTick(false);
         assertEquals(expectedCarts, day13.carts);
 /*
 /---\
@@ -155,7 +169,7 @@ public class Day13Test {
         cart2.col-=1;
         cart2.direction = Cart.Direction.LEFT;
         Collections.sort(expectedCarts);
-        day13.advanceTick();
+        day13.advanceTick(false);
         assertEquals(expectedCarts, day13.carts);
 
         /*
@@ -168,7 +182,7 @@ public class Day13Test {
          */
         cart1.col+=1;
         cart2.col-=1;
-        day13.advanceTick();
+        day13.advanceTick(false);
         assertEquals(expectedCarts, day13.carts);
         /*
 /---\
@@ -181,7 +195,7 @@ public class Day13Test {
         cart1.row+=1;
         cart1.direction = Cart.Direction.DOWN;
         cart2.col-=1;
-        day13.advanceTick();
+        day13.advanceTick(false);
         assertEquals(expectedCarts, day13.carts);
         /*
 /---\
@@ -193,7 +207,7 @@ public class Day13Test {
          */
         cart1.row+=1;
         cart2.col-=1;
-        day13.advanceTick();
+        day13.advanceTick(false);
         assertEquals(expectedCarts, day13.carts);
         /*
 /---\
@@ -207,7 +221,7 @@ public class Day13Test {
         cart1.direction = Cart.Direction.LEFT;
         cart1.nextTurn = Cart.Turn.LEFT;
         cart2.col-=1;
-        day13.advanceTick();
+        day13.advanceTick(false);
         assertEquals(expectedCarts, day13.carts);
         /*
 /---\
@@ -220,7 +234,7 @@ public class Day13Test {
         cart1.col-=1;
         cart2.row+=1;
         cart2.direction = Cart.Direction.DOWN;
-        day13.advanceTick();
+        day13.advanceTick(false);
         assertEquals(expectedCarts, day13.carts);
     }
 }

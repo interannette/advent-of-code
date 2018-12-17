@@ -2,9 +2,6 @@ package org.interannette.day12;
 
 import lombok.Data;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Data
 public class GrowthRule {
     int startState;
@@ -22,9 +19,22 @@ public class GrowthRule {
 
         int startStateAsInt = 0;
         for(int i = 0; i < inputState.length; i++) {
-            startStateAsInt += Math.pow(10, (inputState.length - i - 1)) * (inputState[i] == '#' ? 1 : 0);
+            startStateAsInt += Math.pow(2, (inputState.length - i - 1)) * (inputState[i] == '#' ? 1 : 0);
         }
 
         return new GrowthRule(startStateAsInt, parts[1].trim().equals("#"));
+    }
+
+    public static int getState(Pot currentPot) {
+        Pot oneLeft = currentPot.previousPot;
+        Pot twoLeft = (oneLeft != null) ? oneLeft.previousPot : null;
+        Pot oneRight = currentPot.nextPot;
+        Pot twoRight = (oneRight != null) ? oneRight.nextPot : null;
+
+        return  (twoLeft != null && twoLeft.present ? 1: 0) << 4 |
+                (oneLeft != null && oneLeft.present ? 1 : 0) << 3 |
+                (currentPot.present ? 1 : 0) << 2 |
+                (oneRight != null && oneRight.present ? 1 : 0) << 1 |
+                (twoRight != null && twoRight.present ? 1 : 0) << 0;
     }
 }

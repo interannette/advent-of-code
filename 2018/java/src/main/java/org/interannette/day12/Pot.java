@@ -2,11 +2,11 @@ package org.interannette.day12;
 
 public class Pot {
     boolean present;
-    int number;
+    long number;
     Pot nextPot;
     Pot previousPot;
 
-    public Pot(int number, boolean present) {
+    public Pot(long number, boolean present) {
         this.present = present;
         this.number = number;
     }

@@ -11,7 +11,29 @@ import static org.junit.jupiter.api.Assertions.fail;
 public class Day12Test {
 
     @Test
-    void testInput() {
+    void testSampleInputSolve() {
+        Day12 day12 = new Day12("initial state: #..#.#..##......###...###\n" +
+                "\n" +
+                "...## => #\n" +
+                "..#.. => #\n" +
+                ".#... => #\n" +
+                ".#.#. => #\n" +
+                ".#.## => #\n" +
+                ".##.. => #\n" +
+                ".#### => #\n" +
+                "#.#.# => #\n" +
+                "#.### => #\n" +
+                "##.#. => #\n" +
+                "##.## => #\n" +
+                "###.. => #\n" +
+                "###.# => #\n" +
+                "####. => #");
+
+        assertEquals(325, day12.solveStar1());
+    }
+
+    @Test
+    void testAdvancing() {
         Day12 day12 = new Day12("initial state: #..#.#..##......###...###\n" +
                 "\n" +
                 "...## => #\n" +

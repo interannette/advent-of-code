@@ -1,5 +1,8 @@
 package org.interannette.day12;
 
+import org.interannette.InputGetter;
+
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -7,6 +10,11 @@ public class Day12 {
 
     Pot potsHead;
     Map<Integer, Boolean> growthRules = new HashMap();
+
+    public static void main(String[] args) throws IOException {
+        Day12 day12 = new Day12(InputGetter.getInput(12));
+        System.out.println("Star 1 sum: " + day12.solveStar1());
+    }
 
     public Day12(String input) {
         String[] lines = input.split("\n");
@@ -25,12 +33,29 @@ public class Day12 {
 
     public int solveStar1() {
         Pot thisGeneration = potsHead;
-        for(int generation = 0; generation < 20; generation++) {
-            Pot nextGernation = advanceGeneration(thisGeneration);
-            thisGeneration = nextGernation;
+        int generation = 0;
+        System.out.println("Generation " + generation + " " + thisGeneration);
+
+        while(generation < 20) {
+            generation++;
+            thisGeneration = advanceGeneration(thisGeneration);
+            System.out.println("Generation " + generation + " " + thisGeneration);
         }
 
-        return 0;
+        return addUpPresentPots(thisGeneration);
+    }
+
+    private int addUpPresentPots(Pot head) {
+
+        int total = 0;
+        Pot current = head;
+        while(current != null) {
+            if(current.present) {
+                total += current.number;
+            }
+            current = current.nextPot;
+        }
+        return total;
     }
 
     public Pot advanceGeneration(Pot start) {
@@ -53,7 +78,6 @@ public class Day12 {
 
         while(currentPot.nextPot != null) {
             currentPot = currentPot.nextPot;
-
 
             boolean grow = grow(currentPot);
 

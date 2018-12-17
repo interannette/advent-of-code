@@ -39,16 +39,33 @@ public class Pot {
             currentPot = nextPot;
         }
 
+        // add three to the right
+        Pot rightOne = new Pot(currentPot.number + 1, false);
+        Pot rightTwo = new Pot(currentPot.number + 2, false);
+        Pot rightThree = new Pot(currentPot.number + 3, false);
+        currentPot.nextPot = rightOne;
+        rightOne.previousPot = currentPot;
+        rightOne.nextPot = rightTwo;
+        rightTwo.previousPot = rightOne;
+        rightTwo.nextPot = rightThree;
+        rightThree.previousPot = rightTwo;
+
         return head;
     }
 
     @Override
     public String toString() {
-        return "Pot{" +
-                "present=" + present +
-                ", number=" + number +
-                ", nextPot=" + nextPot +
-                ", previousPot=" + previousPot +
-                '}';
+        String thisString = "";
+        if(this.previousPot == null || this.number % 10 == 0) {
+            thisString += "[" + this.number + "]";
+        }
+
+        thisString += this.present ? "#" : ".";
+
+        if(this.nextPot != null) {
+            thisString += this.nextPot.toString();
+        }
+
+        return thisString;
     }
 }

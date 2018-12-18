@@ -2,7 +2,6 @@ package org.interannette.day13;
 
 import org.interannette.InputGetter;
 
-import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,7 +20,7 @@ public class Day13 {
         System.out.println("First collision is at " + star1.solveStar1());
 
         Day13 star2 = new Day13(InputGetter.getInput(13));
-        System.out.println("Remaining cart location " + star1.solveStar2());
+        System.out.println("Remaining cart location " + star2.solveStar2());
 
     }
 

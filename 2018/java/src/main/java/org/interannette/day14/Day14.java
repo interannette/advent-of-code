@@ -8,7 +8,6 @@ public class Day14 {
 
     public static void main(String[] args) {
         System.out.println("Next 10 for star 1: " + getNextTenAfter(633601));
-        // too high 20310466
         System.out.println("First instance of for star 2: " + findFirstInstanceOf("633601"));
     }
 
@@ -60,6 +59,7 @@ public class Day14 {
                 if(scoreboard.count >= sequence.length) {
                     if (Arrays.equals(sequence,scoreboard.getLastScores(sequence.length))) {
                         found = true;
+                        break;
                     }
                 }
             }

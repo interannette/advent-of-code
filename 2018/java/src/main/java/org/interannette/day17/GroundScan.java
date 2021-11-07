@@ -2,7 +2,6 @@ package org.interannette.day17;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -12,7 +11,7 @@ public class GroundScan {
 
     enum Material {
 
-        SAND('.'), CLAY('#'), WATER('~');
+        SAND('.'), CLAY('#'), WATER('~'), DRIED('|'), SOURCE('+');
 
         Character symbol;
 
@@ -21,13 +20,26 @@ public class GroundScan {
         }
     }
 
+    class Tile {
+        Tile up, down, left, right;
+        int x, y;
+        Material material;
+
+        public Tile(int x, int y, Material material) {
+            this.x = x;
+            this.y = y;
+            this.material = material;
+        }
+    }
+
+    Tile source, head;
     Map<Integer, Map<Integer, Material>> scan = new HashMap<>();
     int yMax, yMin;
 
     public GroundScan(String input) {
 
         Map<Integer, Material> xCol = new HashMap<>();
-        xCol.put(0, Material.WATER);
+        xCol.put(0, Material.SOURCE);
         scan.put(500, xCol);
 
         String[] lines = input.split("\n");
@@ -60,6 +72,8 @@ public class GroundScan {
             }
         }
 
+        int xMin = scan.keySet().stream().mapToInt(i -> i.intValue()).min().getAsInt();
+        int xMax = scan.keySet().stream().mapToInt(i -> i.intValue()).max().getAsInt();
 
         yMax = scan.values().stream()
                 .flatMap(m -> m.keySet().stream())
@@ -73,9 +87,12 @@ public class GroundScan {
                 .min()
                 .getAsInt();
 
-    }
+        head = new Tile(xMin-1, yMin, Material.CLAY);
+        for(int x = xMin-1; x <= xMax+1; x++) {
+            for(int y = yMin; y <= yMax; y++) {
 
-    public void advanceWater() {
+            }
+        }
 
     }
 

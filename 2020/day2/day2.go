@@ -20,6 +20,8 @@ type entry struct {
 	password string
 }
 
+type validator func(entry) bool
+
 var lineRegex = regexp.MustCompile(`(?P<min>\d+)-(?P<max>\d+) (?P<c>\w): (?P<p>\w+)`)
 
 func parse(s string) entry {
@@ -78,7 +80,7 @@ func getInput(sample bool) []entry {
 
 }
 
-func isValid(e entry) bool {
+func isValid_1(e entry) bool {
 	c := strings.Count(e.password, e.p.c)
 	if e.p.min <= c && e.p.max >= c {
 		return true
@@ -87,10 +89,31 @@ func isValid(e entry) bool {
 	}
 }
 
-func countValid(entries []entry) int {
+func isAtPosition(c string, chars []string, i_1 int) bool {
+	i := i_1 - 1
+
+	if i > len(chars) {
+		return false
+	} else {
+		return chars[i] == c
+	}
+}
+
+func isValid_2(e entry) bool {
+	pos1 := e.p.min
+	pos2 := e.p.max
+
+	chars := strings.Split(e.password, "")
+	isAt1 := isAtPosition(e.p.c, chars, pos1)
+	isAt2 := isAtPosition(e.p.c, chars, pos2)
+
+	return (isAt1 != isAt2)
+}
+
+func countValid(entries []entry, f validator) int {
 	i := 0
 	for _, e := range entries {
-		if isValid(e) {
+		if f(e) {
 			i++
 		}
 	}
@@ -100,8 +123,10 @@ func countValid(entries []entry) int {
 func main() {
 	a := getInput(false)
 
-	c := countValid(a)
+	c1 := countValid(a, isValid_1)
+	fmt.Printf("Found %d valid entries part 1\n", c1)
 
-	fmt.Printf("Found %d valid entries\n", c)
+	c2 := countValid(a, isValid_2)
+	fmt.Printf("Found %d valid entries part 2\n", c2)
 
 }

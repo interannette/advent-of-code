@@ -88,4 +88,24 @@ func main() {
 	a := getInput(false)
 	c := countTrees(a, 3, 1)
 	fmt.Println(c)
+
+	slopes := [][]int{
+		{1, 1},
+		{3, 1},
+		{5, 1},
+		{7, 1},
+		{1, 2},
+	}
+
+	counts := make([]int, 0)
+	for _, s := range slopes {
+		count := countTrees(a, s[0], s[1])
+		counts = append(counts, count)
+	}
+
+	product := 1
+	for _, s := range counts {
+		product = product * s
+	}
+	fmt.Println(product)
 }

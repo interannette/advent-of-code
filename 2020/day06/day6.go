@@ -56,7 +56,7 @@ func getInput(sample bool) [][]string {
 }
 
 //a-z = 97, 122
-func computeCount(group []string) int {
+func computeAnyCount(group []string) int {
 	questions := make([]bool, 26)
 
 	for _, s := range group {
@@ -76,11 +76,38 @@ func computeCount(group []string) int {
 	return count
 }
 
+func computeEveryCount(group []string) int {
+	questions := make([]int, 26)
+
+	for _, s := range group {
+		runes := []rune(s)
+		for _, c := range runes {
+			questions[int(c)-97] += 1
+		}
+	}
+
+	count := 0
+	for _, q := range questions {
+		if q == len(group) {
+			count++
+		}
+	}
+
+	return count
+}
+
 func main() {
 	input := getInput(false)
 	sum := 0
 	for _, group := range input {
-		count := computeCount(group)
+		count := computeAnyCount(group)
+		sum += count
+	}
+	fmt.Println(sum)
+
+	sum = 0
+	for _, group := range input {
+		count := computeEveryCount(group)
 		sum += count
 	}
 	fmt.Println(sum)

@@ -20,10 +20,10 @@ type rule struct {
 	conditions []condition
 }
 
-func getInput(sample bool) []string {
+func getInput(sample int) []string {
 
 	input := make([]string, 0)
-	if sample {
+	if sample == 1 {
 		input = append(input, "light red bags contain 1 bright white bag, 2 muted yellow bags.")
 		input = append(input, "dark orange bags contain 3 bright white bags, 4 muted yellow bags.")
 		input = append(input, "bright white bags contain 1 shiny gold bag.")
@@ -33,6 +33,14 @@ func getInput(sample bool) []string {
 		input = append(input, "vibrant plum bags contain 5 faded blue bags, 6 dotted black bags.")
 		input = append(input, "faded blue bags contain no other bags.")
 		input = append(input, "dotted black bags contain no other bags.")
+	} else if sample == 2 {
+		input = append(input, "shiny gold bags contain 2 dark red bags.")
+		input = append(input, "dark red bags contain 2 dark orange bags.")
+		input = append(input, "dark orange bags contain 2 dark yellow bags.")
+		input = append(input, "dark yellow bags contain 2 dark green bags.")
+		input = append(input, "dark green bags contain 2 dark blue bags.")
+		input = append(input, "dark blue bags contain 2 dark violet bags.")
+		input = append(input, "dark violet bags contain no other bags.")
 	} else {
 		file, err := os.Open("input.txt")
 		if err != nil {
@@ -77,17 +85,10 @@ func parseRule(s string) rule {
 	conditions := make([]condition, 0)
 	if conidtionString != "no other bags" {
 		conditionSubstrings := strings.Split(conidtionString, ",")
-		if len(conditions) > 1 {
-			fmt.Println("Found rule with multiple conditions")
-		}
 		for _, c := range conditionSubstrings {
 			condition := parseCondition(c)
 			conditions = append(conditions, condition)
 		}
-	}
-
-	if len(conditions) > 1 {
-		fmt.Println("Found rule with multiple conditions")
 	}
 
 	r := rule{
@@ -118,18 +119,15 @@ func parseCondition(s string) condition {
 	return c
 }
 
-func buildMap(rules []rule) map[string][]string {
+func buildConditionMap(rules []rule) map[string][]string {
 
 	colorMap := make(map[string][]string)
 
 	for _, r := range rules {
-		//fmt.Println("Rule: ")
-		//fmt.Println(r)
 		for _, c := range r.conditions {
 			cur := colorMap[c.color]
 			cur = append(cur, r.color)
 			colorMap[c.color] = cur
-			//fmt.Println(colorMap[c.color])
 		}
 	}
 
@@ -152,10 +150,45 @@ func findContainingColors(colorMap map[string][]string, color string, containing
 	return containingColors
 }
 
+func buildRulesMap(rules []rule) map[string]rule {
+	rulesMap := make(map[string]rule)
+
+	for _, r := range rules {
+		rulesMap[r.color] = r
+	}
+
+	return rulesMap
+}
+
+func findNumContained(rulesMap map[string]rule, color string) int {
+	r := rulesMap[color]
+
+	if len(r.conditions) == 0 {
+		return 0
+	}
+
+	count := 0
+	for _, c := range r.conditions {
+		count += c.n * (1 + findNumContained(rulesMap, c.color))
+	}
+	return count
+}
+
 func main() {
-	input := getInput(false)
+
+	sample := 0
+	part := 2
+
+	input := getInput(sample)
 	rules := parseRules(input)
-	colorsMap := buildMap(rules)
-	containerColors := findContainingColors(colorsMap, "shiny gold", make(map[string]bool))
-	fmt.Println(len(containerColors))
+
+	if part == 1 {
+		colorsMap := buildConditionMap(rules)
+		containerColors := findContainingColors(colorsMap, "shiny gold", make(map[string]bool))
+		fmt.Println(len(containerColors))
+	} else {
+		rulesMap := buildRulesMap(rules)
+		numberContained := findNumContained(rulesMap, "shiny gold")
+		fmt.Println(numberContained)
+	}
 }

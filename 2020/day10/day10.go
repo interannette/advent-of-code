@@ -31,11 +31,10 @@ func getInput(fileName string) []int {
 
 func countDifferences(input []int) (int, int) {
 	ones := 0
-	threes := 1 // always count last one as 3
+	threes := 0
 
-	previous := 0 // wall counts as 0
-	for _, c := range input {
-		diff := c - previous
+	for i := 1; i < len(input); i++ {
+		diff := input[i] - input[i-1]
 		if diff == 1 {
 			ones++
 		} else if diff == 3 {
@@ -43,21 +42,57 @@ func countDifferences(input []int) (int, int) {
 		} else {
 			panic("Unexpected diff")
 		}
-		previous = c
 	}
 
 	return ones, threes
 }
 
-func main() {
-	input := getInput("input.txt")
+// number of ways to get to the end from step a (with options x, y, z)
+// 		sum of ways to get to the end from x +
+//				ways to get to the end from y +
+//				ways to get to the end from z
+func countOptions(input []int, i int, computed map[int]int) int {
 
+	if i == len(input)-1 {
+		return 1
+	}
+
+	options := 0
+	for j := 1; j <= 3 && i+j < len(input); j++ {
+		diff := input[i+j] - input[i]
+		if diff >= 1 && diff <= 3 {
+
+			val, exists := computed[input[i+j]]
+			if exists {
+				options += val
+			} else {
+				options += countOptions(input, i+j, computed)
+			}
+		}
+	}
+	computed[input[i]] = options
+	return options
+}
+
+func main() {
+
+	data := "input.txt"
+	part := 2
+
+	input := getInput(data)
+	input = append(input, 0)
 	sort.Slice(input, func(i, j int) bool {
 		return input[i] < input[j]
 	})
+	input = append(input, input[len(input)-1]+3)
 
-	ones, threes := countDifferences(input)
+	if part == 1 {
+		ones, threes := countDifferences(input)
+		fmt.Printf("Number of ones %d. Number of threes %d. Product %d\n", ones, threes, ones*threes)
+	}
 
-	fmt.Printf("Number of ones %d. Number of threes %d. Product %d\n", ones, threes, ones*threes)
-
+	if part == 2 {
+		arangments := countOptions(input, 0, make(map[int]int))
+		fmt.Printf("Possible arangments %d\n", arangments)
+	}
 }

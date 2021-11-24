@@ -59,7 +59,9 @@ func print(input [][]int) {
 	}
 }
 
-func iterate(grid [][]int) ([][]int, bool) {
+func iterate(grid [][]int, part int) ([][]int, bool) {
+	threshold := 3 + part // 4 for part 1, 5 for part 2
+
 	new_grid := make([][]int, len(grid))
 	changed := false
 	for i := range grid {
@@ -68,11 +70,11 @@ func iterate(grid [][]int) ([][]int, bool) {
 			if grid[i][j] == floor {
 				new_row[j] = floor
 			} else {
-				count := countOccupied(grid, i, j)
+				count := countOccupied(grid, i, j, part)
 				if grid[i][j] == empty && count == 0 {
 					new_row[j] = taken
 					changed = true
-				} else if grid[i][j] == taken && count >= 4 {
+				} else if grid[i][j] == taken && count >= threshold {
 					new_row[j] = empty
 					changed = true
 				} else {
@@ -86,7 +88,15 @@ func iterate(grid [][]int) ([][]int, bool) {
 	return new_grid, changed
 }
 
-func countOccupied(grid [][]int, i int, j int) int {
+func countOccupied(grid [][]int, i int, j int, part int) int {
+	if part == 1 {
+		return countAdjacentOccupied(grid, i, j)
+	} else {
+		return countLineOfSight(grid, i, j)
+	}
+}
+
+func countAdjacentOccupied(grid [][]int, i int, j int) int {
 	count := 0
 
 	startX := i - 1
@@ -124,6 +134,94 @@ func countOccupied(grid [][]int, i int, j int) int {
 	return count
 }
 
+func countLineOfSight(grid [][]int, i int, j int) int {
+	count := 0
+
+	// (1, 0)
+	for x := i + 1; x < len(grid); x++ {
+		s := grid[x][j]
+		if s == taken {
+			count++
+			break
+		} else if s == empty {
+			break
+		}
+	}
+	// (-1, 0)
+	for x := i - 1; x >= 0; x-- {
+		s := grid[x][j]
+		if s == taken {
+			count++
+			break
+		} else if s == empty {
+			break
+		}
+	}
+	// (0, -1)
+	for y := j - 1; y >= 0; y-- {
+		s := grid[i][y]
+		if s == taken {
+			count++
+			break
+		} else if s == empty {
+			break
+		}
+	}
+	// (0, 1)
+	for y := j + 1; y < len(grid[i]); y++ {
+		s := grid[i][y]
+		if s == taken {
+			count++
+			break
+		} else if s == empty {
+			break
+		}
+	}
+	// (1, 1)
+	for z := 1; i+z < len(grid) && j+z < len(grid[i]); z++ {
+		s := grid[i+z][j+z]
+		if s == taken {
+			count++
+			break
+		} else if s == empty {
+			break
+		}
+	}
+	// (1, -1)
+	for z := 1; i+z < len(grid) && j-z >= 0; z++ {
+		s := grid[i+z][j-z]
+		if s == taken {
+			count++
+			break
+		} else if s == empty {
+			break
+		}
+	}
+
+	// (-1, -1)
+	for z := 1; i-z >= 0 && j-z >= 0; z++ {
+		s := grid[i-z][j-z]
+		if s == taken {
+			count++
+			break
+		} else if s == empty {
+			break
+		}
+	}
+
+	// (-1, 1)
+	for z := 1; i-z >= 0 && j+z < len(grid[i]); z++ {
+		s := grid[i-z][j+z]
+		if grid[i-z][j+z] == taken {
+			count++
+			break
+		} else if s == empty {
+			break
+		}
+	}
+	return count
+}
+
 func countAll(grid [][]int) int {
 	count := 0
 	for i := range grid {
@@ -138,12 +236,12 @@ func countAll(grid [][]int) int {
 }
 
 func main() {
-
+	part := 2
 	input := getInput("input.txt")
 
 	changed := true
 	for changed {
-		input, changed = iterate(input)
+		input, changed = iterate(input, part)
 	}
 
 	count := countAll(input)

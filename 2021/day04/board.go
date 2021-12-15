@@ -64,8 +64,7 @@ func (b board) MarkNumber(n int) (board, bool) {
 }
 
 func (b board) checkRow(row int) bool {
-	for i := 0; i < 5; i++ {
-		if !b.marks[row][i] {
+	for i := 0; i < 5; i++ {                   
 			return false
 		}
 	}

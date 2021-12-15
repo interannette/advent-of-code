@@ -32,9 +32,7 @@ func getInput(fileName string) []instruction {
 
 	return input
 }
-
-var instructionRegex = regexp.MustCompile(`^(?P<op>[a-z]{3}) (?P<arg>[+\-]{1}\d+)$`)
-
+  
 func parseInstruction(line string) instruction {
 	match := instructionRegex.FindStringSubmatch(line)
 	if len(match) > 0 {

@@ -26,14 +26,39 @@ func (p pos) String() string {
 
 func (p pos) neighbors() []pos {
 	neighbors := make([]pos, 0)
-	neighbors = append(neighbors, NewPos(p.x-1, p.y+1))
-	neighbors = append(neighbors, NewPos(p.x-1, p.y))
-	neighbors = append(neighbors, NewPos(p.x-1, p.y-1))
-	neighbors = append(neighbors, NewPos(p.x, p.y-1))
-	neighbors = append(neighbors, NewPos(p.x, p.y+1))
-	neighbors = append(neighbors, NewPos(p.x+1, p.y+1))
-	neighbors = append(neighbors, NewPos(p.x+1, p.y-1))
-	neighbors = append(neighbors, NewPos(p.x+1, p.y))			
+
+	xMinusValid := p.x > 0
+	xPlusValid := p.x < 9
+	yMinusValid := p.y > 0
+	yPlusValid := p.y < 9
+
+	if xMinusValid {
+		if yPlusValid {	
+			neighbors = append(neighbors, NewPos(p.x-1, p.y+1))
+		}
+		neighbors = append(neighbors, NewPos(p.x-1, p.y))
+		if yMinusValid {
+			neighbors = append(neighbors, NewPos(p.x-1, p.y-1))
+		}
+	}
+
+	if yMinusValid {
+		neighbors = append(neighbors, NewPos(p.x, p.y-1))
+	}
+
+	if yPlusValid {
+		neighbors = append(neighbors, NewPos(p.x, p.y+1))
+	}
+
+	if xPlusValid {
+		if yPlusValid {
+			neighbors = append(neighbors, NewPos(p.x+1, p.y+1))
+		}
+		if yMinusValid {
+			neighbors = append(neighbors, NewPos(p.x+1, p.y-1))
+		}
+		neighbors = append(neighbors, NewPos(p.x+1, p.y))
+	}		
 	return neighbors
 }
 
@@ -130,7 +155,7 @@ func NewGrid(lines []string) grid {
 	}
 }
 
-func (g *grid) advanceStep() int {
+func (g *grid) advanceStep(debug bool) int {
 	flashes := 0
 
 	posToAddTo := NewPosQueue()
@@ -140,7 +165,9 @@ func (g *grid) advanceStep() int {
 		}
 	}
 
-	//fmt.Printf("Starting advance with queue %v. Slice %v\n", posToAddTo, posToAddTo.positions)
+	if debug {
+		fmt.Printf("Starting advance with queue %v\n", posToAddTo)
+	}
 
 	for posToAddTo.hasMore() {
 		p := posToAddTo.pop()
@@ -149,7 +176,11 @@ func (g *grid) advanceStep() int {
 		flashed := o.addOneAndCheckFlash()
 		if flashed {
 			flashes++
-			posToAddTo.pushSlice(p.neighbors())
+			n := p.neighbors()
+			posToAddTo.pushSlice(n)
+			if debug {
+				fmt.Printf("%v flashed. Adding neighbors %v\n", p, n)
+			}
 		}
 		g.octopi[p] = o
 	}
@@ -203,18 +234,34 @@ func getInput(fileName string) grid {
 	return NewGrid(input)
 }
 
-func main() {
-	file := "sample"
-	grid := getInput(file + ".txt")
-	fmt.Println(grid)
-
+func doPart1(g grid) {
 	flashes := 0
 	for i:=1; i<=100;i++ {
-		flashes += grid.advanceStep()
-		if i == 15 {
-			fmt.Printf("Round %d\n", i)
-			fmt.Println(grid)
-		}
+		flashes += g.advanceStep(false)
 	}
 	fmt.Printf("Total flashes %d\n", flashes)
+}
+
+func doPart2(g grid) {
+	flashes :=0
+	rounds := 0
+	for flashes < 100 {
+		rounds++
+		flashes = g.advanceStep(false)
+	}
+
+	fmt.Printf("All flash at round %d\n", rounds)
+}
+
+func main() {
+	file := "input"
+	part := 2
+
+	grid := getInput(file + ".txt")
+
+	if part == 1 {
+		doPart1(grid)
+	} else {
+		doPart2(grid)
+	}
 }

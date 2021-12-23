@@ -50,12 +50,12 @@ func (c cave) neighbors(p pos) []pos {
 	return neighbors
 }
 
-func (c cave) riskOfPos(p pos) int {
+func (c cave) riskOfPos(p pos) uint64 {
 	return c.scores[p]
 }
 
 type cave struct {
-	scores map[pos]int
+	scores map[pos]uint64
 	size   int
 }
 
@@ -67,7 +67,7 @@ func (c cave) String() string {
 			if j != 0 {
 				output.WriteString(" ")
 			}
-			output.WriteString(strconv.Itoa(c.riskOfPos(p)))
+			output.WriteString(strconv.Itoa(int(c.riskOfPos(p))))
 		}
 		output.WriteString("\n")
 	}
@@ -76,18 +76,18 @@ func (c cave) String() string {
 }
 
 func NewCave(lines []string, part2 bool) cave {
-	grid := make(map[pos]int)
+	grid := make(map[pos]uint64)
 	for i, l := range lines {
 		chars := strings.Split(l, "")
 		for j, c := range chars {
 			num, _ := strconv.Atoi(c)
-			grid[NewPos(j, i)] = num
+			grid[NewPos(j, i)] = uint64(num)
 		}
 	}
 	size := len(lines)
 
 	if part2 {
-		newGrid := make(map[pos]int)
+		newGrid := make(map[pos]uint64)
 		originalSize := size
 		size = size * 5
 		for i := 0; i < size; i++ {
@@ -106,7 +106,7 @@ func NewCave(lines []string, part2 bool) cave {
 	}
 }
 
-func exntendedRisk(p pos, originalGrid map[pos]int, originalSize int) int {
+func exntendedRisk(p pos, originalGrid map[pos]uint64, originalSize int) uint64 {
 	//each time the tile repeats to the right or downward,
 	// all of its risk levels are 1 higher than the tile immediately up or left of it.
 	// However, risk levels above 9 wrap back around to 1.
@@ -117,13 +117,13 @@ func exntendedRisk(p pos, originalGrid map[pos]int, originalSize int) int {
 	yMultiple := p.y / originalSize
 
 	originalRisk := originalGrid[NewPos(xRemainder, yRemainder)]
-	risk := originalRisk + xMultiple + yMultiple
+	risk := int(originalRisk) + xMultiple + yMultiple
 	riskRemainder := risk % 10
 	riskMultiple := risk / 10
 
 	totalRisk := riskRemainder + riskMultiple
 
-	return totalRisk
+	return uint64(totalRisk)
 }
 
 func (c cave) allPos() ([]pos, pos) {
@@ -172,7 +172,7 @@ func (c cave) doDijkstra() uint64 {
 		neighbors := c.neighbors(current)
 		for _, n := range neighbors {
 			if !visited[n] {
-				risk := uint64(c.riskOfPos(n))
+				risk := c.riskOfPos(n)
 				newDist := distOfCurrent + risk
 				existingDist := distances[n]
 				if newDist < existingDist {
@@ -237,7 +237,7 @@ func getInput(fileName string, part2 bool) cave {
 
 func main() {
 	file := "input"
-	part2 := false
+	part2 := true
 	c := getInput(file+".txt", part2)
 
 	risk := c.doDijkstra()

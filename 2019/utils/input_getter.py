@@ -4,8 +4,8 @@ import os
 import requests
 
 
-def get_url_for_day(day: int) -> str:
-    return f"https://adventofcode.com/2019/day/{day}/input"
+def get_url_for_day(day: int, year: int = 2019) -> str:
+    return f"https://adventofcode.com/{year}/day/{day}/input"
 
 
 def get_cookie() -> Dict[str, str]:

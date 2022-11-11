@@ -1,11 +1,11 @@
 import math
 from typing import Callable, List
+from utils.input_getter import get_input_for_day
 
 
 def readlines() -> List[int]:
-    with open("/Users/annette/dev/advent-of-code/2019/day01/input.txt") as f:
-        lines = f.readlines()
-        return [int(line) for line in lines]
+    lines = get_input_for_day(1)
+    return [int(line) for line in lines if line]
 
 
 def calculate_fuel(mass: int) -> int:

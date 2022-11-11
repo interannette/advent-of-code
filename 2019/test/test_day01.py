@@ -1,4 +1,4 @@
-from day01.day01 import calculate_fuel, calculate_fuel_including_fuel
+from day01 import calculate_fuel, calculate_fuel_including_fuel
 
 
 def test_example1():

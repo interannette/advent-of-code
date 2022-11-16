@@ -50,13 +50,12 @@ class IntcodeComputer:
     def execute_current_instruction(self) -> Instruction:
         instruction = self.current_instruction()
         operation = None
-        match instruction.opcode:
-            case Opcode.HALT:
-                return
-            case Opcode.ADD:
-                operation = sum
-            case Opcode.MULTIPLY:
-                operation = math.prod
+        if instruction.opcode == Opcode.HALT:
+            return
+        elif instruction.opcode == Opcode.ADD:
+            operation = sum
+        elif instruction.opcode == Opcode.MULTIPLY:
+            operation = math.prod
 
         self.memory[instruction.result_pos] = operation(
             [

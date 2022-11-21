@@ -10,5 +10,5 @@ def test_get_url_for_20():
 
 
 def test_get_input():
-    input = get_input_for_day(1)
+    input = get_input_for_day(4)
     assert input

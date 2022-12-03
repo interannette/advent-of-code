@@ -105,12 +105,12 @@ def sum_second_star_rounds(input: List[str]) -> int:
 
 
 def first_star():
-    inputs = get_input_for_day(2)
+    inputs = get_input_for_day()
     print(sum_first_star_rounds(inputs))
 
 
 def second_star():
-    inputs = get_input_for_day(2)
+    inputs = get_input_for_day()
     print(sum_second_star_rounds(inputs))
 
 

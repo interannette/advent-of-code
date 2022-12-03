@@ -36,12 +36,12 @@ def find_top_three_elves(inputs: List[str]) -> List[Elf]:
 
 
 def first_star():
-    inputs = get_input_for_day(1)
+    inputs = get_input_for_day()
     print(find_max_elf(inputs))
 
 
 def second_star():
-    inputs = get_input_for_day(1)
+    inputs = get_input_for_day()
     top_three = find_top_three_elves(inputs)
     print(f"Top three: {top_three}. Total {sum([e.calories for e in top_three])}")
 

@@ -32,4 +32,6 @@ def get_input_for_day(day: Optional[int] = None) -> List[str]:
 
     r = requests.get(url=get_url_for_day(day), cookies=get_cookie())
     lines = r.text.split("\n")
+    if lines[-1] == "":
+        lines = lines[:-1]
     return lines

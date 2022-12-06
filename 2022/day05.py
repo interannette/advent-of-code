@@ -49,13 +49,19 @@ class Dock:
 
         return Dock(stacks=stacks)
 
+
+TDock = TypeVar("TDock", bound=Dock)
+
+
+class CrateMover9000(Dock):
+    @staticmethod
+    def parse(inputs: List[str]) -> "CrateMover9000":
+        return CrateMover9000(Dock.parse(inputs).stacks)
+
     def apply_move(self, move: Move) -> None:
         for i in range(move.amount):
             c = self.stacks[move.start].pop(0)
             self.stacks[move.end].insert(0, c)
-
-
-TDock = TypeVar("TDock", bound=Dock)
 
 
 class CrateMover9001(Dock):
@@ -90,7 +96,7 @@ def build_end_str(dock: Dock) -> str:
 
 def first_star():
     input = get_input_for_day()
-    dock = run_steps(input, Dock)
+    dock = run_steps(input, CrateMover9000)
     print(build_end_str(dock))
 
 

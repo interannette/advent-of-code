@@ -1,4 +1,4 @@
-from day05 import Move, Dock, run_steps, build_end_str, CrateMover9001
+from day05 import Move, Dock, run_steps, build_end_str, CrateMover9001, CrateMover9000
 
 
 def test_move_parser():
@@ -30,15 +30,15 @@ def test_dock_parser_real():
 
 def test_dock_move_example1():
     input = ["    [D]    ", "[N] [C]    ", "[Z] [M] [P]"]
-    output = Dock.parse(input)
+    output = CrateMover9000.parse(input)
     move = Move(1, 2, 1)
     output.apply_move(move)
     expected_stacks = {1: ["[D]", "[N]", "[Z]"], 2: ["[C]", "[M]"], 3: ["[P]"]}
-    assert output == Dock(expected_stacks)
+    assert output == CrateMover9000(expected_stacks)
 
 
 def test_dock_move_example2():
-    dock = Dock({1: ["[D]", "[N]", "[Z]"], 2: ["[C]", "[M]"], 3: ["[P]"]})
+    dock = CrateMover9000({1: ["[D]", "[N]", "[Z]"], 2: ["[C]", "[M]"], 3: ["[P]"]})
     move = Move(3, 1, 3)
     dock.apply_move(move)
     expected_stacks = {
@@ -46,7 +46,7 @@ def test_dock_move_example2():
         2: ["[C]", "[M]"],
         3: ["[Z]", "[N]", "[D]", "[P]"],
     }
-    assert dock == Dock(expected_stacks)
+    assert dock == CrateMover9000(expected_stacks)
 
 
 def test_run_steps_first():
@@ -62,8 +62,8 @@ def test_run_steps_first():
         "move 1 from 1 to 2",
     ]
 
-    end_state = run_steps(input, Dock)
-    expected_output = Dock(
+    end_state = run_steps(input, CrateMover9000)
+    expected_output = CrateMover9000(
         {
             1: ["[C]"],
             2: ["[M]"],

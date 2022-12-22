@@ -1,4 +1,4 @@
-from day15 import SenorGrid, Position
+from day15 import SenorGrid, Position, Range
 
 SAMPLE_INPUT = [
     "Sensor at x=2, y=18: closest beacon is at x=-2, y=15",
@@ -89,11 +89,14 @@ def test_safe_range():
     assert computed_range == expected_range
 
 
+def test_safe_range_on_row():
+    s = Position(0, 2)
+    distance = 2
+    assert SenorGrid.safe_range_for_point_on_row(s, distance, 1) == Range(
+        start=-1, end=1
+    )
+
+
 def test_excluded():
     s = SenorGrid(SAMPLE_INPUT)
-    s.calculate_excluded_space()
-
-    assert s
-
-    row = [p.x for p in s.excluded_space if p.y == 10]
-    assert 26 == len(row)
+    assert 26 == s.calculate_excluded_space(10)

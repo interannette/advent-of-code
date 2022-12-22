@@ -1,8 +1,34 @@
 from dataclasses import dataclass
 import re
-from typing import Dict, List, Set
-from itertools import product
+from typing import Dict, List, Optional, Set
+from itertools import product, accumulate
 from utils.input_getter import get_input_for_day
+
+
+@dataclass
+class Range:
+    start: int
+    end: int
+
+    def __init__(
+        self,
+        center: Optional[int] = None,
+        dist: Optional[int] = None,
+        start: Optional[int] = None,
+        end: Optional[int] = None,
+    ) -> None:
+        if not start:
+            self.start = center - dist
+            self.end = center + dist
+        else:
+            self.start = start
+            self.end = end
+
+    def is_in(self, val: int) -> bool:
+        return self.start < val < self.end
+
+    def included_points(self) -> Set[int]:
+        return set(range(self.start, self.end + 1))
 
 
 @dataclass(frozen=True)
@@ -19,12 +45,11 @@ class SenorGrid:
 
     sensors: List[Position]
     detected_beacons = List[Position]
-    excluded_space = Set[Position]
 
     def __init__(self, input: List[str]):
         self.sensors = []
         self.detected_beacons = []
-        self.excluded_space = set()
+
         for l in input:
             m = re.search(
                 "^Sensor at x=(-?\d+), y=(-?\d+): closest beacon is at x=(-?\d+), y=(-?\d+)$",
@@ -51,24 +76,39 @@ class SenorGrid:
 
         return set(p)
 
-    def calculate_excluded_space(self) -> None:
+    @staticmethod
+    def safe_range_for_point_on_row(s: Position, dist: int, row: int) -> Range:
+
+        y_dist = abs(s.y - row)
+        x_dist = dist - y_dist
+
+        return Range(center=s.x, dist=x_dist)
+
+    def calculate_excluded_space(self, row: int) -> int:
+        intervals_on_row = []
         for i in range(len(self.sensors)):
             s = self.sensors[i]
             b = self.detected_beacons[i]
 
-            dist = abs(s.x - b.x) + abs(s.y - b.y)
-            self.excluded_space.update(SenorGrid.safe_range_for_point(s, dist))
+            dist = Position.dist(s, b)
+            if Range(s.y, dist).is_in(row):
+                # find relevant part in row
+                intervals_on_row.append(
+                    SenorGrid.safe_range_for_point_on_row(s, dist, row)
+                )
 
-        self.excluded_space.difference_update(self.sensors)
-        self.excluded_space.difference_update(self.detected_beacons)
+        excluded_points = set().union(*[i.included_points() for i in intervals_on_row])
+        excluded_points.difference_update([s.x for s in self.sensors if s.y == row])
+        excluded_points.difference_update(
+            [s.x for s in self.detected_beacons if s.y == row]
+        )
+        return len(excluded_points)
 
 
 def first_star():
     input = get_input_for_day()
     s = SenorGrid(input)
-    s.calculate_excluded_space()
-    row = [p.x for p in s.excluded_space if p.y == 2000000]
-    print(len(row))
+    print(s.calculate_excluded_space(2000000))
 
 
 if __name__ == "__main__":

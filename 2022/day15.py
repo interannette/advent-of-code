@@ -3,6 +3,7 @@ import re
 from typing import Dict, List, Optional, Set
 from itertools import product, accumulate
 from utils.input_getter import get_input_for_day
+import logging
 
 
 @dataclass
@@ -17,7 +18,7 @@ class Range:
         start: Optional[int] = None,
         end: Optional[int] = None,
     ) -> None:
-        if not start:
+        if dist:
             self.start = center - dist
             self.end = center + dist
         else:
@@ -62,54 +63,82 @@ class SenorGrid:
                 raise Exception("unable to parse line")
 
     @staticmethod
-    def safe_range_for_point(s: Position, dist: int) -> Set[Position]:
-        # Boundary:
-        # (s.x + dist, s.y) <> (s.x-dist, s.y)
-        # (s.x , s.y-dist) <> (s.x, s.y+dist)
-        p = [
-            Position(x, y)
-            for (x, y) in product(
-                range(s.x - dist, s.x + dist + 1), range(s.y - dist, s.y + dist + 1)
-            )
-            if Position.dist(s, Position(x, y)) <= dist
-        ]
-
-        return set(p)
-
-    @staticmethod
-    def safe_range_for_point_on_row(s: Position, dist: int, row: int) -> Range:
+    def safe_range_for_point_on_row(
+        s: Position, dist: int, row: int, limit: Optional[int] = None
+    ) -> Range:
 
         y_dist = abs(s.y - row)
         x_dist = dist - y_dist
 
-        return Range(center=s.x, dist=x_dist)
+        r = Range(center=s.x, dist=x_dist)
 
-    def calculate_excluded_space(self, row: int) -> int:
+        if limit:
+            return Range(start=max(0, r.start), end=min(limit, r.end))
+        else:
+            return r
+
+    def calculate_excluded_space(
+        self, row: int, limit: Optional[int] = None, exclude: Optional[bool] = True
+    ) -> Set[int]:
         intervals_on_row = []
         for i in range(len(self.sensors)):
             s = self.sensors[i]
             b = self.detected_beacons[i]
 
             dist = Position.dist(s, b)
-            if Range(s.y, dist).is_in(row):
+            if Range(center=s.y, dist=dist).is_in(row):
                 # find relevant part in row
                 intervals_on_row.append(
-                    SenorGrid.safe_range_for_point_on_row(s, dist, row)
+                    SenorGrid.safe_range_for_point_on_row(s, dist, row, limit)
                 )
 
-        excluded_points = set().union(*[i.included_points() for i in intervals_on_row])
-        excluded_points.difference_update([s.x for s in self.sensors if s.y == row])
-        excluded_points.difference_update(
-            [s.x for s in self.detected_beacons if s.y == row]
-        )
-        return len(excluded_points)
+        if exclude:
+            excluded_points = set().union(
+                *[i.included_points() for i in intervals_on_row]
+            )
+            excluded_points.difference_update([s.x for s in self.sensors if s.y == row])
+            excluded_points.difference_update(
+                [s.x for s in self.detected_beacons if s.y == row]
+            )
+            return excluded_points
+        else:
+            intervals_on_row.sort(key=lambda x: x.start)
+            current = Range(
+                start=intervals_on_row[0].start, end=intervals_on_row[0].end
+            )
+            missing = set()
+            for interval in intervals_on_row:
+                if interval.start <= current.end + 1:
+                    current.end = interval.end
+                else:
+                    missing.update(range(current.end + 1, interval.start + 1))
+                    current = Range(start=interval.start, end=interval.end)
+
+            return missing
+
+    def calculate_tuning_frequence(self, limit: int) -> int:
+
+        for i in range(limit + 1):
+            logging.debug(f"Checking row: {i}")
+            row = self.calculate_excluded_space(i, limit, False)
+            if len(row) > 0:
+                return row.pop() * 4000000 + i
+
+        return -1
 
 
 def first_star():
     input = get_input_for_day()
     s = SenorGrid(input)
-    print(s.calculate_excluded_space(2000000))
+    print(len(s.calculate_excluded_space(2000000)))
+
+
+def second_star():
+    input = get_input_for_day()
+    s = SenorGrid(input)
+    print(s.calculate_tuning_frequence(4000000))
 
 
 if __name__ == "__main__":
-    first_star()
+    logging.basicConfig(level=logging.DEBUG)
+    second_star()

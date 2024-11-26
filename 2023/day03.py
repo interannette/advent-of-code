@@ -144,11 +144,12 @@ def find_adjacent_numbers(i: int, j: int) -> List[int]:
 
 
 def check_gear(i: int, j: int) -> (bool, int):
-    print(f"checking ({i},{j})")
     adj_nums = find_adjacent_numbers(i, j)
     if len(adj_nums) == 2:
+        print(f"adding ({i},{j}) with nums {adj_nums[0]}, {adj_nums[1]}")
         return True, adj_nums[0] * adj_nums[1]
     else:
+        print(f"skipping ({i},{j})")
         return False, -1
 
 
@@ -159,9 +160,9 @@ def solve_part2() -> int:
             if INPUT[i][j] == '*':
                 is_gear, gear_ratio = check_gear(i, j)
                 if is_gear:
-                    print(f"adding ({i},{j}) with gear ratio {gear_ratio}")
                     gear_ratios.append(gear_ratio)
     return sum(gear_ratios)
 
 
+# 71998335, too low
 print(solve_part2())

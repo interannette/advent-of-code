@@ -61,34 +61,6 @@ def test_init():
         assert Position(beacon[0], beacon[1]) in s.detected_beacons
 
 
-def test_safe_range():
-    s = Position(0, 2)
-    distance = 2
-    expected_range = set(
-        [
-            Position(0, 0),
-            Position(0, 1),
-            Position(0, 2),
-            Position(0, 3),
-            Position(0, 4),
-            Position(1, 1),
-            Position(1, 2),
-            Position(1, 3),
-            Position(2, 2),
-            Position(-1, 1),
-            Position(-1, 3),
-            Position(-1, 2),
-            Position(-2, 2),
-        ]
-    )
-
-    computed_range = SenorGrid.safe_range_for_point(s, distance)
-    for c in computed_range:
-        d = abs(s.x - c.x) + abs(s.y - c.y)
-        assert d <= distance
-    assert computed_range == expected_range
-
-
 def test_safe_range_on_row():
     s = Position(0, 2)
     distance = 2
@@ -99,4 +71,10 @@ def test_safe_range_on_row():
 
 def test_excluded():
     s = SenorGrid(SAMPLE_INPUT)
-    assert 26 == s.calculate_excluded_space(10)
+    assert 26 == len(s.calculate_excluded_space(10))
+
+
+def test_frequency():
+    s = SenorGrid(SAMPLE_INPUT)
+    f = s.calculate_tuning_frequence(limit=20)
+    assert f == 56000011

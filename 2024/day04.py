@@ -3,10 +3,10 @@ import logging
 
 logger = logging.getLogger()
 logger.addHandler(logging.StreamHandler())
-logger.setLevel(logging.WARN)
+logger.setLevel(logging.DEBUG)
 
 
-class Day04Puzzle:
+class Day04Star1Puzzle:
     letters: list[list[str]]
     size: int
 
@@ -33,16 +33,18 @@ class Day04Puzzle:
         logger.debug("counting lines")
         for l in lines:
             logger.debug(l)
-        return sum([Day04Puzzle._count_instances_for_string("".join(l)) for l in lines])
+        return sum(
+            [Day04Star1Puzzle._count_instances_for_string("".join(l)) for l in lines]
+        )
 
     def count_horizontal(self) -> int:
-        count = Day04Puzzle._count_instances_for_lines(self.letters)
+        count = Day04Star1Puzzle._count_instances_for_lines(self.letters)
         logger.info(f"horizontal count {count}")
         return count
 
     def count_vertical(self) -> int:
         columns = [[l[i] for l in self.letters] for i in range(len(self.letters[0]))]
-        count = Day04Puzzle._count_instances_for_lines(columns)
+        count = Day04Star1Puzzle._count_instances_for_lines(columns)
         logger.info(f"vertical count {count}")
         return count
 
@@ -84,7 +86,7 @@ class Day04Puzzle:
         increment = (1, 1)
 
         lines = self._build_lines(starting_points, increment)
-        count = Day04Puzzle._count_instances_for_lines(lines)
+        count = Day04Star1Puzzle._count_instances_for_lines(lines)
         logger.info(f"down right count {count}")
         return count
 
@@ -105,7 +107,7 @@ class Day04Puzzle:
 
         lines = self._build_lines(starting_points, increment)
 
-        count = Day04Puzzle._count_instances_for_lines(lines)
+        count = Day04Star1Puzzle._count_instances_for_lines(lines)
         logger.info(f"up right count {count}")
         return count
 
@@ -121,12 +123,41 @@ class Day04Puzzle:
         return count
 
 
-def parse_star2_input(input_lines: Iterable[str]) -> any:
-    return None
+class Day04Star2Puzzle:
+    letters: list[list[str]]
+    size: int
 
+    def __init__(self, input_lines: Iterable[str]):
+        self.letters = [list(l.strip()) for l in input_lines]
+        self.size = len(self.letters)
 
-def star2(parsed_input: any) -> int:
-    return -1
+    def check_pos(self, x: int, y: int) -> bool:
+        logger.debug(f"checking {x},{y}")
+        if self.letters[x][y] != "A":
+            logger.debug(f"{x},{y} is not A. False")
+            return False
+
+        if x - 1 < 0 or y - 1 < 0 or x + 1 >= self.size or y + 1 >= self.size:
+            logger.debug(f"{x},{y} is out of range. False")
+            return False
+
+        ms_set = {"M", "S"}
+        if {self.letters[x - 1][y - 1], self.letters[x + 1][y + 1]} != ms_set:
+            return False
+
+        if {self.letters[x - 1][y + 1], self.letters[x + 1][y - 1]} != ms_set:
+            return False
+
+        logger.debug(f"{x},{y} is X-MAS. True")
+        return True
+
+    def star2(self) -> int:
+        # positions = list(zip(range(self.size), range(self.size))) was only giving me (i,i) not sure why
+        positions = []
+        for i in range(self.size):
+            for j in range(self.size):
+                positions.append((i, j))
+        return sum([1 if self.check_pos(x, y) else 0 for (x, y) in positions])
 
 
 test_input = False
@@ -145,7 +176,8 @@ MXMXAXMASX""".splitlines()
 else:
     input = open("inputs/day04.txt").readlines()
 
-puzzle = Day04Puzzle(input_lines=input)
-print(puzzle.star1())
-# print(star1(parse_star1_input(input)))
-# print(star2(parse_star2_input(input)))
+# puzzle = Day04Star1Puzzle(input_lines=input)
+# print(puzzle.star1())
+
+puzzle = Day04Star2Puzzle(input_lines=input)
+print(puzzle.star2())

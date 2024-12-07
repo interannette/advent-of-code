@@ -1,22 +1,23 @@
 from dataclasses import dataclass
 import logging
-from typing import Iterable
+from typing import Iterable, Optional
 
 logger = logging.getLogger()
 logger.addHandler(logging.StreamHandler())
-logger.setLevel(logging.WARN)
+logger.setLevel(logging.INFO)
 
 
 @dataclass(frozen=True)
 class Coordinate:
     x: int
     y: int
+    direction: Optional[str] = None
 
     def __add__(self, other) -> "Coordinate":
-        return Coordinate(self.x + other.x, self.y + other.y)
+        return Coordinate(self.x + other.x, self.y + other.y, self.direction)
 
     def __str__(self) -> str:
-        return f"({self.x},{self.y})"
+        return f"({self.x},{self.y}, {self.direction})"
 
 
 ROTATION = {"^": ">", ">": "v", "v": "<", "<": "^"}
@@ -28,12 +29,13 @@ DIRECTION = {
 }
 
 
-class Day06Puzzle:
+class Day06Star1Puzzle:
     obstacles: set[Coordinate]
     guard_coord: Coordinate
-    guard: str
     size: int
     path: set[Coordinate]
+    locations: set[Coordinate]
+    loop: bool = False
 
     def __init__(self, input_lines: Iterable[str]):
         obstacles = set()
@@ -44,8 +46,7 @@ class Day06Puzzle:
                 if c == "#":
                     obstacles.add(Coordinate(i, j))
                 elif c in ROTATION.keys():
-                    self.guard_coord = Coordinate(i, j)
-                    self.guard = c
+                    self.guard_coord = Coordinate(i, j, c)
                 j += 1
             i -= 1
         self.size = len(input_lines)
@@ -55,30 +56,35 @@ class Day06Puzzle:
     def _is_out_of_map(self, c: Coordinate) -> bool:
         return c.x < 0 or c.y < 0 or c.x > self.size or c.y > self.size
 
-    def _advance_to_exit(self):
+    def advance_to_completion(self):
         while True:
-            next_step = self.guard_coord + DIRECTION[self.guard]
+            next_step = self.guard_coord + DIRECTION[self.guard_coord.direction]
             logger.debug(f"next step {next_step}")
             if self._is_out_of_map(next_step):
-                logger.info(f"next step {next_step} is out of bounds")
+                logger.debug(f"next step {next_step} is out of bounds")
                 self.path.add(self.guard_coord)
                 return
-            elif next_step in self.obstacles:
-                self.guard = ROTATION[self.guard]
-                logger.info(f"guard rotated to {self.guard}")
+            elif Coordinate(next_step.x, next_step.y) in self.obstacles:
+                self.guard_coord = Coordinate(
+                    self.guard_coord.x,
+                    self.guard_coord.y,
+                    ROTATION[self.guard_coord.direction],
+                )
+                logger.debug(f"guard rotated to {self.guard_coord}")
+            elif next_step in self.path:
+                self.loop = True
+                return
             else:
                 self.path.add(self.guard_coord)
-                logger.info(
+                logger.debug(
                     f"moving guard to next step. adding {self.guard_coord} to path. path size {len(self.path)}"
                 )
                 self.guard_coord = next_step
 
     def star1(self) -> int:
-        self._advance_to_exit()
-        return len(self.path)
-
-    def star2(parsed_input: any) -> int:
-        return -1
+        self.advance_to_completion()
+        self.locations = {Coordinate(c.x, c.y) for c in self.path}
+        return len(self.locations)
 
 
 test_input = False
@@ -96,5 +102,22 @@ if test_input:
 else:
     input = open("inputs/day06.txt").readlines()
 
-puzzle = Day06Puzzle(input)
+puzzle = Day06Star1Puzzle(input)
 print(puzzle.star1())
+
+
+loops = 0
+for p in puzzle.locations:
+    logger.debug(f"testing {p}")
+    modified_puzzle = Day06Star1Puzzle(input)
+    modified_puzzle.obstacles.add(p)
+
+    modified_puzzle.advance_to_completion()
+
+    if modified_puzzle.loop:
+        logger.info(f"{p} results in a loop")
+        loops += 1
+    else:
+        logger.debug(f"{p} does not loop")
+
+print(loops)

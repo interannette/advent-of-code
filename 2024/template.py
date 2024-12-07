@@ -1,4 +1,9 @@
+import logging
 from typing import Iterable
+
+logger = logging.getLogger()
+logger.addHandler(logging.StreamHandler())
+logger.setLevel(logging.DEBUG)
 
 
 def parse_star1_input(input_lines: Iterable[str]) -> any:

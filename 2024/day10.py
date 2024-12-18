@@ -71,13 +71,34 @@ class Day10Puzzle:
             count += len(peaks)
         return count
 
+    def find_rating(self, trailhead: Coordinate) -> int:
+        valid_paths: list[list[Coordinate]] = [[trailhead]]
+        for l in range(9):
+            next_valid_paths: list[list[Coordinate]] = []
+            for path in valid_paths:
+                step = path[-1]
+                last_value = self.topo[step.x][step.y]
+                neighbors = self._neighbors(step)
+                for n in neighbors:
+                    if self.topo[n.x][n.y] == last_value + 1:
+                        next_valid_paths.append(path + [n])
+            valid_paths = next_valid_paths
+
+        return len(valid_paths)
+
+    def star2(self) -> int:
+        count = 0
+        for trailhead in self.trailheads.keys():
+            count += self.find_rating(trailhead)
+        return count
+
 
 test_input1 = """0123
 1234
 8765
 9876""".splitlines()
 test1 = Day10Puzzle(test_input1)
-print(f"Test input 1 result {test1.star1()}")
+# print(f"Test input 1 result {test1.star1()}")
 
 test_input2 = """89010123
 78121874
@@ -88,8 +109,9 @@ test_input2 = """89010123
 01329801
 10456732""".splitlines()
 test2 = Day10Puzzle(test_input2)
-print(f"Test input 2 result {test2.star1()}")
+# print(f"Test input 2 result {test2.star1()}")
+print(f"Test input 2 result: rank {test2.star2()}")
 
 real_input = open("inputs/day10.txt").readlines()
 real_puzzle = Day10Puzzle(real_input)
-print(f"Real input 1 result {real_puzzle.star1()}")
+print(f"Real input 1 result {real_puzzle.star2()}")

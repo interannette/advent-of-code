@@ -1,11 +1,15 @@
 {
+    "cSpell.words": [
+        "antinodes",
+        "SAMX",
+        "topo",
+        "trailheads",
+        "XMASXSSAMX",
+        "XMASXXMAS",
+        "xmul"
+    ],
     "python.testing.unittestArgs": [
-        "-v",
-        "-s",
-        "./tests",
-        "-p",
         "test_*.py"
     ],
-    "python.testing.pytestEnabled": false,
-    "python.testing.unittestEnabled": true
+    "python.testing.unittestEnabled": true,
 }

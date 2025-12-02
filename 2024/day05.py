@@ -49,7 +49,6 @@ class Day05Puzzle:
         for i in range(len(update)):
             rules = self.after_before_rules.get(update[i])
             # if anything before i is contained in the rules, it's not valid
-
             # if update[i] is before anything in rules, return false
             # if rules is in after, return false
             if rules:
@@ -62,8 +61,19 @@ class Day05Puzzle:
         logger.info(f"found valid update: {update}")
         return update[floor(len(update) / 2)]
 
+    # continue along update until you find a broken rule
+    # once you find a broken rule, swap the offending rule
+    # take the updated update and check again
+    # if you make it to the end you are valid
+
+    def _fix_invalid_update(self, update: list[int]) -> int:
+        return 0
+
     def star1(self) -> int:
         return sum([self._validate_update(update) for update in self.updates])
+
+    def star2(self) -> int:
+        return sum([self._fix_invalid_update(update) for update in self.updates])
 
 
 test_input = False

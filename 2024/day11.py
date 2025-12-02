@@ -45,6 +45,8 @@ class Day11Puzzle:
 
     def star2(self) -> int:
         for i in range(75):
+            if i % 10 == 0:
+                print(f"round {i}")
             self.stones = Day11Puzzle.advance(self.stones)
         return len(self.stones)
 

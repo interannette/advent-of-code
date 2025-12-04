@@ -55,7 +55,7 @@ L99
 R14
 L82""".splitlines()
 else:
-    input = open("inputs/day01.txt").readlines()
+    input = open("../inputs/day01.txt").readlines()
 
 
 instructions = [parse_instruction(line) for line in input]

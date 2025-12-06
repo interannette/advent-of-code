@@ -38,7 +38,7 @@ if test_input:
 234234234234278
 818181911112111""".splitlines()
 else:
-    input = open("../inputs/day03.txt").readlines()
+    input = open("solutions/inputs/day03.txt").readlines()
 
 
 bank = [BatteryBank(b.strip()) for b in input]
